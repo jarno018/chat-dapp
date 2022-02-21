@@ -1,7 +1,5 @@
 <script lang="ts">
-import { user } from "./user";
-
-
+  import { user } from "./user";
 
   let username: string;
   let password: string;
