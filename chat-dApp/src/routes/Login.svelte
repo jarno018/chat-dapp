@@ -1,11 +1,75 @@
 <script lang="ts">
-  import { user } from "./user";
+  import { gun, user } from "./user";
+
+  // Keep track if the user tried to login
+  let attemptedLogin: boolean = false;
 
   let username: string;
   let password: string;
+  let buttonValue: string;
 
-  const handler = () => {
-    console.log(username + " " + password);
+  let errorMsg: string;
+
+  const userExists = async (): Promise<boolean> => {
+    return new Promise<boolean>(resolve => {
+      gun.get(username).once((result) => {
+        resolve(result ? true : false);
+      })
+    })
+  }
+
+  const login = async () => {
+    return new Promise<void>((resolve, reject) => {
+      //Check if the user exists
+      if(!userExists()) reject('User not found. Register instead ?');
+
+      //If the user exists, authenticate
+      user.auth(username, password, (ack: any) => {
+        if(ack.err) reject(ack.err);
+        else resolve();
+      })
+    })
+
+    
+  }
+
+  const register = async () => {
+    return new Promise<void>((resolve, reject) => {
+      //Check if username is not taken
+      if(userExists()) reject('Username is already taken');
+
+      //Create the user
+      user.create(username, password, (ack: any) => {
+        if(ack.err) reject(ack.err);
+        else resolve();
+      });
+    })
+
+  }
+
+
+
+  const handler = (event: SubmitEvent) => {
+
+    //Check the submitbutton used
+    let buttonValue: string = (<HTMLInputElement>event.submitter).value;
+
+    //The user tried logging in
+    attemptedLogin = true;
+
+    (async() => {
+      try {
+        //User tries logging in
+        if(buttonValue == "Let's chat") await login();
+        if(buttonValue == "Try again") await login();
+        if(buttonValue == "Register instead") await register();
+      }
+      catch(err) {
+        errorMsg = err;
+      }
+    })();
+
+
   }
 
 </script>
@@ -18,7 +82,16 @@
   <form id="form" on:submit|preventDefault={handler}>
     <input type="text" id="username" placeholder="Username" bind:value={username} />
     <input type="password" id="password" placeholder="Password" bind:value={password} />
-    <input type="submit" value="Let's chat">
+    {#if errorMsg}
+      <p style="color: red;">{errorMsg}</p>
+    {/if}
+    {#if !attemptedLogin}
+      <input type="submit" value="Let's chat">
+    {:else}
+      <input type="submit" value="Try again">
+      <input type="submit" value="Register instead">
+    {/if}
+    
   </form>
 </div>
 
