@@ -3,9 +3,9 @@
   import Login from './Login.svelte';
   import Rooms from './Rooms.svelte';
 
-  import { db, user, username } from './user';
+  import { gun, user, username } from './user';
 
-  console.log(user);
+  
 
 
 </script>
@@ -14,7 +14,11 @@
   <title>Chat dApp</title>
 </svelte:head>
 <div class="app-window">
-  <Login />
+  {#if !user.is}
+    <Login />
+  {:else}
+    <Rooms />
+  {/if}
 </div>
 
 
