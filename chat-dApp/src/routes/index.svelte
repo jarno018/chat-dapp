@@ -11,10 +11,10 @@
   <title>Chat dApp</title>
 </svelte:head>
 <div class="app-window">
-  {#if !user.is}
-    <Login />
-  {:else}
+  {#if user.is}
     <Rooms />
+  {:else}
+    <Login />
   {/if}
 </div>
 
@@ -34,6 +34,7 @@
     height: 65%;
     background-color: blueviolet;
     border: 1px solid black;
+    position: relative;
   }
 
 </style>
