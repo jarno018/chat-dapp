@@ -3,10 +3,7 @@
   import Login from './Login.svelte';
   import Rooms from './Rooms.svelte';
 
-  import { gun, user, username } from './user';
-
-  
-
+  import { gun, user } from './user';
 
 </script>
 
