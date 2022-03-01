@@ -14,7 +14,7 @@
   <title>Chat dApp</title>
 </svelte:head>
 <div class="app-window">
-  <Rooms />
+  <Login />
 </div>
 
 
