@@ -21,6 +21,6 @@ Chatroom
   -> Show last 50 messages
   -> Room can be editted
 
-Gunjs, Sveltekit, tailwindCSS, webanimations
+Gunjs, Sveltekit, tailwindCSS, webanimations, typescript
 
 
