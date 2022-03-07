@@ -8,22 +8,19 @@ Chatrooms available
     Public rooms
       -> gun.get('public').map().on(function()) //Gets the rooms
       -> gun.get('public).put('roomName') //Adds a room
-    Private rooms
-      -> gun.get('user').get('joinedRooms') //Gets the rooms
-      -> user.grant(UID).set(RoomId) //Needs to be researched -> a room participant can add user based on UID to the room
   Search for chatrooms
     -> Only public rooms can be found
   Add a room
     -> Creates a new room
-    -> Member can be added
     -> Name can be given
-    -> Avatar/icon ?
+    -> Color
 
 Chatroom
-  -> Display the icon
+  -> Display the color
   -> Display the name
   -> Show last 50 messages
-  -> Add users button
   -> Room can be editted
+
+Gunjs, Sveltekit, tailwindCSS, webanimations
 
 
