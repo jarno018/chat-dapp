@@ -19,7 +19,10 @@
 </div>
 
 
-<style>
+<style global lang="postcss">
+  @tailwind base;
+  @tailwind components;
+  @tailwind utilities;
 
   :global(body) {
     display: flex;

@@ -2,6 +2,7 @@
 
   import 'gun/lib/then'
   import { gun, user } from './user';
+  import Editor from './Editor.svelte';
 
   interface IRooms {
     joinedRooms: string[] | string;
@@ -14,6 +15,7 @@
   };
 
   let searchTerm: string;
+  let editorActive: boolean = false;
 
   //Get the chatrooms a user has already joined
   const getJoinedRooms = async (): Promise<string> => {
@@ -45,7 +47,7 @@
 
 
   const addChat = () => {
-
+    editorActive = !editorActive;
   }
 
   // Iterate all the chats the user can join and display in the UI
@@ -54,36 +56,40 @@
 
 <button class="add-button" on:click={addChat}>+</button>
 <div class="top-content">
-  <input class="searchbar" type="text" bind:value={searchTerm} placeholder="Search for chats">
+  <input class="top-content searchbar" type="text" bind:value={searchTerm} placeholder="Search for chats">
 </div>
-<div class="participated-rooms">
-  <h2>Participated rooms</h2>
-  {#if !rooms.joinedRooms}
-    <p>You have not joined any rooms yet</p>
-  {:else}
-    {#each rooms.joinedRooms as room}
-      <div class="room">
-        <div class="left chat-color">
+{#if editorActive}
+  <Editor />
+{:else}
+  <div class="participated-rooms">
+    <h2 class="font-semibold text-black text-lg">Participated rooms</h2>
+    {#if !rooms.joinedRooms}
+      <p>You have not joined any rooms yet</p>
+    {:else}
+      {#each rooms.joinedRooms as room}
+        <div class="room">
+          <div class="left chat-color">
+          </div>
+          <h3 class="right chat-description">{room}</h3>
         </div>
-        <h3 class="right chat-description">{room}</h3>
-      </div>
-    {/each}
-  {/if}
-</div>
-<div class="other-rooms">
-  <h2>Other rooms</h2>
-  {#if !rooms.otherRooms}
-    <p>There are no rooms available</p>
-  {:else}
-    {#each rooms.otherRooms as room}
-      <div class="room">
-        <div class="left chat-color">
+      {/each}
+    {/if}
+  </div>
+  <div class="other-rooms">
+    <h2 class="font-semibold text-black text-lg">Other rooms</h2>
+    {#if !rooms.otherRooms}
+      <p>There are no rooms available</p>
+    {:else}
+      {#each rooms.otherRooms as room}
+        <div class="room">
+          <div class="left chat-color">
+          </div>
+          <h3 class="right chat-description">{room}</h3>
         </div>
-        <h3 class="right chat-description">{room}</h3>
-      </div>
-    {/each}
-  {/if}
-</div>
+      {/each}
+    {/if}
+  </div>
+{/if}
 
 
 <style>
