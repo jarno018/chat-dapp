@@ -4,48 +4,52 @@
   import { gun, user } from './user';
   import Editor from './Editor.svelte';
 
+  //Structure of a room object
   interface IRooms {
-    joinedRooms: string[] | string;
-    otherRooms: string[] | string;
+    id: number,
+    privateKey: number
   }
 
-  let rooms: IRooms = {
-    joinedRooms: [],
-    otherRooms: []
-  };
+  //Holding the rooms in memory
+  let joinedPublicRooms: IRooms[];
+  let joinedPrivateRooms: IRooms[];
 
   let searchTerm: string;
-  let editorActive: boolean = false;
+  let editorActive: boolean = true;
 
-  //Get the chatrooms a user has already joined
-  const getJoinedRooms = async (): Promise<string> => {
+  //Get the public chatrooms a user has already joined
+  //Searching the user -> joinedPublicRooms
+  //Return array of objects containing all public joined rooms
+  const getJoinedPublicRooms = async (): Promise<IRooms[]> => {
     return new Promise(resolve => {
-      user.get('joinedRooms').promise((data) => {
-        resolve(data.key);
+      user.get('joinedPublicRooms').once((data: IRooms[]) => {
+        
+        resolve(data);
       });
     })
   }
 
-  //Get the chatrooms a user might be interested in
-  const getOtherRooms = async (): Promise<string> => {
+  //Get the private chatrooms a user has joined
+  //Searching the user -> joinedPrivateRooms graph
+  //Return array of objects containing private joined rooms
+  const getJoinedPrivateRooms = async (): Promise<IRooms[]> => {
     return new Promise(resolve => {
-      user.get('rooms').promise((data) => {
-        resolve(data.key);
+      user.get('joinedPrivateRooms').once((data: IRooms[]) => {
+        console.log(data);
+        resolve(data);
       })
     })
   }
   
+
   (async() => {
 
-    rooms.joinedRooms = await getJoinedRooms();
-    rooms.otherRooms = await getOtherRooms();
-
-    console.log(await getJoinedRooms());
+    joinedPublicRooms = await getJoinedPublicRooms();
+    joinedPrivateRooms = await getJoinedPrivateRooms();
 
   })();
 
-
-
+  //Toggle add-chat window
   const addChat = () => {
     editorActive = !editorActive;
   }
@@ -61,33 +65,35 @@
 {#if editorActive}
   <Editor />
 {:else}
-  <div class="participated-rooms">
-    <h2 class="font-semibold text-black text-lg">Participated rooms</h2>
-    {#if !rooms.joinedRooms}
-      <p>You have not joined any rooms yet</p>
-    {:else}
-      {#each rooms.joinedRooms as room}
-        <div class="room">
-          <div class="left chat-color">
+  <div class="all-rooms">
+    <div class="participated-rooms">
+      <h2 class="font-semibold text-black text-lg">Public rooms</h2>
+      {#if !joinedPublicRooms}
+        <p>You have not joined any public rooms yet. Maybe search for one.</p>
+      {:else}
+        {#each joinedPublicRooms as room}
+          <div class="room">
+            <div class="left chat-color">
+            </div>
+            <h3 class="right chat-description">{room}</h3>
           </div>
-          <h3 class="right chat-description">{room}</h3>
-        </div>
-      {/each}
-    {/if}
-  </div>
-  <div class="other-rooms">
-    <h2 class="font-semibold text-black text-lg">Other rooms</h2>
-    {#if !rooms.otherRooms}
-      <p>There are no rooms available</p>
-    {:else}
-      {#each rooms.otherRooms as room}
-        <div class="room">
-          <div class="left chat-color">
+        {/each}
+      {/if}
+    </div>
+    <div class="other-rooms">
+      <h2 class="font-semibold text-black text-lg">Private rooms</h2>
+      {#if !joinedPrivateRooms}
+        <p>There are no rooms available</p>
+      {:else}
+        {#each joinedPrivateRooms as room}
+          <div class="room">
+            <div class="left chat-color">
+            </div>
+            <h3 class="right chat-description">{room}</h3>
           </div>
-          <h3 class="right chat-description">{room}</h3>
-        </div>
-      {/each}
-    {/if}
+        {/each}
+      {/if}
+    </div>
   </div>
 {/if}
 
@@ -137,6 +143,13 @@
   .room:hover {
     background-color: rgb(216, 213, 209);
     transform: scale(1.1);
+  }
+  .all-rooms {
+    width: 95%;
+    margin: 10px auto auto auto;
+  }
+  .participated-rooms {
+    margin-top: 20px;
   }
   .room.chat-color {
     display: block;

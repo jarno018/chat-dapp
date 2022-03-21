@@ -15,10 +15,11 @@
   "#dbadff",
   "#e1e1e1"
   ]
+  let selectedColor: string;
 
 </script>
 
-<select name="" id="">
+<select name="" id="" class="color-select" style="--bg-color: {selectedColor}" bind:value={selectedColor} >
   {#each colors as color}
     <option value={color}>{color}</option>
   {/each}
@@ -26,4 +27,11 @@
 
 <style>
   @import "http://netdna.bootstrapcdn.com/font-awesome/4.0.0/css/font-awesome.css";
+  .color-select {
+    background-color: var(--bg-color) ;
+  }
+
+  option {
+    background-color: white;
+  }
 </style>

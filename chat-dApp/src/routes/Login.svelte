@@ -106,7 +106,6 @@
     justify-content: center;
     align-items: center;
     width: 100%;
-    color: white;
   }
   .login h2 {
     margin-top: 20px;
