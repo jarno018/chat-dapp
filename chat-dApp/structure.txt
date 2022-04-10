@@ -23,4 +23,7 @@ Chatroom
 
 Gunjs, Sveltekit, tailwindCSS, webanimations, typescript
 
+  // Username: Mathis
+  // Password: delbeke123
+
 
