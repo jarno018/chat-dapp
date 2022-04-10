@@ -1,4 +1,3 @@
-<!-- Based upon https://plnkr.co/edit/VVclW0?p=preview&preview-->
 <script lang="ts">
 
   let colors:string[] = [
@@ -15,7 +14,9 @@
   "#dbadff",
   "#e1e1e1"
   ]
-  let selectedColor: string;
+
+  //Default to first color
+  export let selectedColor: string = colors[0];
 
 </script>
 
