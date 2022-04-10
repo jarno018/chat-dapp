@@ -1,0 +1,121 @@
+<script lang="ts">
+
+
+  /**
+   * Here a user can join a room based on a supplied ID
+   * If the rooms where to be private, a key is needed to join, otherwise messages cant be decoded
+   * TODO: add timeout for the ID inputfield so errormessage is not displayed directly
+   * TODO: colors for the key ?
+  */
+
+  import Chat from './Chat.svelte';
+  import ColorPicker from './ColorPicker.svelte'
+  import { gun } from './user';
+  import { SEA } from 'gun';
+
+  
+  //Structure of a room object
+  interface IRoom {
+    name: string,
+    id: number,
+    color: string,
+    isPrivate: boolean,
+    salt: EpochTimeStamp,
+    hash: number
+  }
+
+  let chatId: string;
+  let resultingChat: IRoom;
+  let suppliedKey: string;
+  let keyIsValid: boolean = false;
+  let submitted: boolean = false;
+
+  let findRoomWithId = () => {
+    gun.get('rooms').get(chatId).once((data: IRoom) => {
+      //If the room is found
+      if(!data) return;
+      resultingChat = data;
+
+      //Make sure we can pass if a key is not needed
+      if(!resultingChat.isPrivate) keyIsValid = true;
+    });
+    
+  }
+
+  let validateKey = () => {
+    //Check if the chat exists
+    if(!resultingChat) return;
+
+    //Checking if the supplied key is correct
+    if(SEA.decrypt(resultingChat.hash, suppliedKey)) keyIsValid = true;
+
+  }
+
+  let handleSubmit = (e) => {
+
+  }
+
+</script>
+
+<div class="editor-window">
+  <form action="#" on:submit|preventDefault={handleSubmit}>
+    <div class="credentials">
+      <input type="text" placeholder="ID" bind:value={chatId} on:blur={findRoomWithId}>
+      {#if !resultingChat}
+        <span class="error">Geen chat gevonden, controleer de ID</span>
+      {/if}
+      {#if resultingChat && resultingChat.isPrivate}
+        <span class="error">Deze chat is privé, een sleutel is nodig</span>
+        <input type="text" placeholder="sleutel" bind:value={suppliedKey} on:blur={validateKey}>
+        {#if keyIsValid}
+          <span class="error">Ongeldige sleutel</span>
+        {/if}
+      {/if}
+    </div>
+    <button type="submit" disabled={!keyIsValid}>Lid worden</button>
+    {#if submitted && (!keyIsValid || !resultingChat)}
+      <span class="success">Je kan niet deelnemen aan deze chat. Kijk alle velden na.</span>
+    {/if}
+  </form>
+  
+
+</div>
+
+<style>
+  .editor-window {
+    width: 95%;
+    margin: 20px auto auto auto;
+  }
+
+  input {
+    margin-top: 10px;
+    width: 100%;
+    padding: 5px 5px 5px 5px;
+  }
+
+  button[type="submit"] {
+    color: #000;
+    background-color: #2196F3;
+    height: 20px;
+    width: 100%;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
+  }
+
+  button:disabled:hover {
+    cursor:not-allowed
+  }
+
+  span.error {
+    color: red;
+
+  }
+  
+  span.success {
+    color: green;
+  }
+
+</style>
