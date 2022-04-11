@@ -1,6 +1,9 @@
 <script lang="ts">
   import { gun, user } from "./user";
 
+  // Username: Mathis
+  // Password: delbeke123
+
   // Keep track if the user tried to login
   let attemptedLogin: boolean = false;
 
