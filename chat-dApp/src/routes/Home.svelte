@@ -39,14 +39,15 @@
     right: 0;
     width: 40px;
     height: 40px;
-    background-color: aqua;
+    background-color: rgb(230, 152, 28);
     border: none;
     border-radius: 40px;
     transform: translate(-20px, -20px);
+    z-index: 100;
   }
 
   .add-button:hover {
-    background-color: rgb(166, 204, 204);
+    background-color: rgb(185, 134, 52);
   }
 
 </style>
