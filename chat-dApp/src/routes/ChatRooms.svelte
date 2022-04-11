@@ -3,7 +3,7 @@
   import 'gun/lib/then'
   import { gun, user } from './user';
   import Editor from './Editor.svelte';
-import { dataset_dev } from 'svelte/internal';
+import { dataset_dev, onMount } from 'svelte/internal';
 
   //Structure of a room object
   interface IRoom {
@@ -15,54 +15,87 @@ import { dataset_dev } from 'svelte/internal';
     hash: string
   }
 
+  //Structure of a joined room
+  interface IJoinedRoom {
+    id: number
+  }
+
   //Binding the input of the query
   let searchTerm: string;
 
   //Holding the rooms in memory
-  let joinedPublicRooms: IRoom[];
-  let joinedPrivateRooms: IRoom[];
+  let joinedPublicRooms: IRoom[] = <IRoom[]>[];
+  let joinedPrivateRooms: IRoom[] = <IRoom[]>[];
 
-  //Get the public chatrooms a user has already joined
-  //Searching the user -> joinedPublicRooms
-  //Return array of objects containing all public joined rooms
-  const getJoinedPublicRooms = async (): Promise<IRoom[]> => {
-    return new Promise(resolve => {
-      user.get('joinedPublicRooms').once((data: IRoom[]) => {
-        resolve(data);
-      });
-    })
-  }
-
-
-  (async() => {
-    user.get('joinedPublicRooms').once((data, key) => {
-      console.log(data);
-      // gun.get(data).once((result) => {
-      //   console.log(result);
-      // })
-    });
-
-  })();
-
-  //Get the private chatrooms a user has joined
-  //Searching the user -> joinedPrivateRooms graph
-  //Return array of objects containing private joined rooms
-  const getJoinedPrivateRooms = async (): Promise<IRoom[]> => {
-    return new Promise(resolve => {
-      user.get('joinedPrivateRooms').once((data: IRoom[]) => {
-        resolve(data);
+  //Get the chatroom based on supplied id
+  const getRoomFromId = async (id:  number): Promise<IRoom> => {
+    return new Promise((resolve, reject) => {
+      gun.get('rooms').get(id).once((targetRoom: IRoom) => {
+        resolve(targetRoom);
       })
     })
   }
+
+  //Get the public chats a user has already joined
+  //Searching the user -> joinedPublicRooms
+  //Return array of objects containing all ids of joined chats
+  const getJoinedPublicRooms = async (): Promise<void> => {
+    return new Promise((resolve) => {
+      user.get('joinedPublicRooms').map(async (data: IJoinedRoom) => {
+        //After getting the ID, retreive the chat itself
+        let room = await getRoomFromId(data.id);
+
+        //Only add if the chat is not already present
+        if(!joinedPublicRooms.includes(room)) joinedPublicRooms.push(room);
+
+        //To trigger UI update, we need assignment istead of mutation
+        joinedPublicRooms = joinedPublicRooms;
+      });
+      resolve();
+    });
+  }
+
+
+  // (async() => {
+  //   user.get('joinedPublicRooms').map((result) => {
+  //     console.log(result);
+  //     // gun.get(data).once((result) => {
+  //     //   console.log(result);
+  //     // })
+  //   });
+
+  // })();
+
+  //Get the private chatrooms a user has joined
+  //Searching the user -> joinedPrivateRooms graph
+  //Return array of objects containing all ids of private joined rooms
+  const getJoinedPrivateRooms = async (): Promise<void> => {
+    return new Promise(resolve => {
+      user.get('joinedPrivateRooms').map(async (data: IJoinedRoom) => {
+        //After getting the ID, retreive the chat itself
+        let room = await getRoomFromId(data.id);
+
+        //Only add if the chat is not already present
+        if(!joinedPrivateRooms.includes(room)) joinedPrivateRooms.push(room);
+
+        //To trigger UI update, we need assignment istead of mutation
+        joinedPrivateRooms = joinedPrivateRooms;
+      });
+      
+      resolve();
+    });
+  }
   
 
-  (async() => {
+  //Run when UI is loaded
+  onMount(async () => {
 
-    joinedPublicRooms = await getJoinedPublicRooms();
-    joinedPrivateRooms = await getJoinedPrivateRooms();
+    //Await the filling of the arrays
+    await getJoinedPublicRooms();
 
-  })();
+    await getJoinedPrivateRooms();
 
+  });
 
 </script>
 
@@ -72,12 +105,12 @@ import { dataset_dev } from 'svelte/internal';
 <div class="all-rooms">
   <div class="participated-rooms">
     <h2 class="font-semibold text-black text-lg">Public rooms</h2>
-    {#if !joinedPublicRooms}
-      <p>You have not joined any public rooms yet. Maybe search for one.</p>
+    {#if !joinedPublicRooms.length}
+      <p>You have not joined any public rooms yet.</p>
     {:else}
       {#each joinedPublicRooms as room}
         <div class="room">
-          <div class="left chat-color">
+          <div class="left chat-color" style="background-color: {room.color};">
           </div>
           <h3 class="right chat-description">{room.name}</h3>
         </div>
@@ -86,14 +119,14 @@ import { dataset_dev } from 'svelte/internal';
   </div>
   <div class="other-rooms">
     <h2 class="font-semibold text-black text-lg">Private rooms</h2>
-    {#if !joinedPrivateRooms}
-      <p>There are no rooms available</p>
+    {#if !joinedPrivateRooms.length}
+      <p>You have not joined any private rooms yet.</p>
     {:else}
       {#each joinedPrivateRooms as room}
         <div class="room">
-          <div class="left chat-color">
+          <div class="left chat-color" style="background-color: {room.color};">
           </div>
-          <h3 class="right chat-description">{room}</h3>
+          <h3 class="right chat-description">{room.name}</h3>
         </div>
       {/each}
     {/if}
@@ -122,22 +155,33 @@ import { dataset_dev } from 'svelte/internal';
     padding: 5px 5px 5px 5px;
   }
   .room {
-    width: 90%;
+    width: 100%;
     height: 40px;
-    background-color: antiquewhite;
-    border-bottom: 1px solid grey;
+    
+    border-bottom: 1px solid black;
     display: inline-flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: center;
     transition: all 0.3s;
+    margin-bottom: 3px;
   }
   .room:hover {
-    background-color: rgb(216, 213, 209);
-    transform: scale(1.1);
+    transform: scale(1.01);
   }
   .all-rooms {
     width: 95%;
     margin: 10px auto auto auto;
+  }
+  .left.chat-color {
+    width: 20px;
+    height: 20px;
+    border-radius: 10px;
+    display: block;
+    margin-left: 10px;
+  }
+  .chat-description {
+    margin-left: 30px;
+    font-weight: 500;
   }
   .participated-rooms {
     margin-top: 20px;
@@ -148,6 +192,9 @@ import { dataset_dev } from 'svelte/internal';
     width: 20px;
     height: 20px;
     border-radius: 5px;
+  }
+  .other-rooms {
+    margin-top: 20px;
   }
 
 </style>
