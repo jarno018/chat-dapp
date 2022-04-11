@@ -21,7 +21,7 @@
     color: string,
     isPrivate: boolean,
     salt: EpochTimeStamp,
-    hash: number
+    hash: string
   }
 
   let chatId: string;
@@ -62,19 +62,19 @@
     <div class="credentials">
       <input type="text" placeholder="ID" bind:value={chatId} on:blur={findRoomWithId}>
       {#if !resultingChat}
-        <span class="error">Geen chat gevonden, controleer de ID</span>
+        <span class="error">No chat found, please check the ID</span>
       {/if}
       {#if resultingChat && resultingChat.isPrivate}
-        <span class="error">Deze chat is privé, een sleutel is nodig</span>
+        <span class="error">This chat is private, a key is needed</span>
         <input type="text" placeholder="sleutel" bind:value={suppliedKey} on:blur={validateKey}>
         {#if keyIsValid}
-          <span class="error">Ongeldige sleutel</span>
+          <span class="error">Wrong key</span>
         {/if}
       {/if}
     </div>
-    <button type="submit" disabled={!keyIsValid}>Lid worden</button>
+    <button type="submit" disabled={!keyIsValid}>Become member</button>
     {#if submitted && (!keyIsValid || !resultingChat)}
-      <span class="success">Je kan niet deelnemen aan deze chat. Kijk alle velden na.</span>
+      <span class="success">Joining failed, please check all fields</span>
     {/if}
   </form>
   
