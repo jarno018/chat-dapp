@@ -1,7 +1,8 @@
 <script lang="ts">
 
   import Login from './Login.svelte';
-  import Rooms from './Rooms.svelte';
+  import Home from './Home.svelte'
+  import Rooms from './ChatRooms.svelte';
 
   import { gun, user } from './user';
 
@@ -12,7 +13,7 @@
 </svelte:head>
 <div class="app-window">
   {#if user.is}
-    <Rooms />
+    <Home />
   {:else}
     <Login />
   {/if}
@@ -38,6 +39,7 @@
     background-color: blueviolet;
     border: 1px solid black;
     position: relative;
+    overflow: scroll;
   }
 
 </style>
