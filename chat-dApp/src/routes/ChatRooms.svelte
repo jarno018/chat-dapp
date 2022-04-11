@@ -186,7 +186,7 @@ import { dataset_dev, onMount } from 'svelte/internal';
   .participated-rooms {
     margin-top: 20px;
   }
-  .room.chat-color {
+  .room .chat-color {
     display: block;
     background-color: lightcoral;
     width: 20px;
