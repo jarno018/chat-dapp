@@ -5,8 +5,15 @@
 
   import ColorPicker from './ColorPicker.svelte';
   import { SEA } from "gun";
-  import { gun, user } from './user';
+  import { gun, user, username } from './user';
   import { generateRandomString, generateRandomNumber } from '../util/random';
+
+  //Structure of a message
+  interface IMessage {
+    createdBy: string,
+    createdAt: EpochTimeStamp,
+    message: string
+  }
 
   //Structure of a room object
   interface IRoom {
@@ -15,7 +22,7 @@
     color: string,
     isPrivate: boolean,
     salt: EpochTimeStamp,
-    hash: string
+    hash: string,
   }
 
   //Creating new chat every time page loads
@@ -25,7 +32,7 @@
     color: '#7bd148',
     isPrivate: false,
     salt: Date.now(),
-    hash: ""
+    hash: "",
   };
 
   let errMsg: string;
@@ -47,6 +54,7 @@
 
     //Add room to the chain and save the id in the user graph -> makes sure all joined rooms are in memory when app loads
     let ref = gun.get('rooms').get(newChat.id).put(newChat);
+    console.log(ref);
 
     //Add the room to the users joinedRooms
     if(newChat.isPrivate) {
@@ -62,7 +70,6 @@
 
     //DEBUG
     console.log(newChat);
-
 
   }
 

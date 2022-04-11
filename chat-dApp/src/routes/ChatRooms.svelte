@@ -1,9 +1,7 @@
 <script lang="ts">
 
-  import 'gun/lib/then'
   import { gun, user } from './user';
-  import Editor from './Editor.svelte';
-import { dataset_dev, onMount } from 'svelte/internal';
+  import { createEventDispatcher, onMount } from 'svelte/internal';
 
   //Structure of a room object
   interface IRoom {
@@ -18,6 +16,7 @@ import { dataset_dev, onMount } from 'svelte/internal';
   //Structure of a joined room
   interface IJoinedRoom {
     id: number
+    key?: string
   }
 
   //Binding the input of the query
@@ -26,6 +25,15 @@ import { dataset_dev, onMount } from 'svelte/internal';
   //Holding the rooms in memory
   let joinedPublicRooms: IRoom[] = <IRoom[]>[];
   let joinedPrivateRooms: IRoom[] = <IRoom[]>[];
+
+  //Pass an event to the parent (home) when a chat is clicked
+  const dispatch = createEventDispatcher();
+
+  const chatClicked = (id: number) => {
+    dispatch('chatClicked', {
+      id: id,
+    });
+  }
 
   //Get the chatroom based on supplied id
   const getRoomFromId = async (id:  number): Promise<IRoom> => {
@@ -51,6 +59,7 @@ import { dataset_dev, onMount } from 'svelte/internal';
         //To trigger UI update, we need assignment istead of mutation
         joinedPublicRooms = joinedPublicRooms;
       });
+      
       resolve();
     });
   }
@@ -75,13 +84,17 @@ import { dataset_dev, onMount } from 'svelte/internal';
         //After getting the ID, retreive the chat itself
         let room = await getRoomFromId(data.id);
 
+        console.log(data);
+
+        if(!data) return;
+
         //Only add if the chat is not already present
         if(!joinedPrivateRooms.includes(room)) joinedPrivateRooms.push(room);
 
         //To trigger UI update, we need assignment istead of mutation
         joinedPrivateRooms = joinedPrivateRooms;
       });
-      
+      console.log(joinedPrivateRooms);
       resolve();
     });
   }
@@ -109,7 +122,7 @@ import { dataset_dev, onMount } from 'svelte/internal';
       <p>You have not joined any public rooms yet.</p>
     {:else}
       {#each joinedPublicRooms as room}
-        <div class="room">
+        <div class="room" on:click={() => chatClicked(parseInt(room.id))}>
           <div class="left chat-color" style="background-color: {room.color};">
           </div>
           <h3 class="right chat-description">{room.name}</h3>
@@ -123,7 +136,7 @@ import { dataset_dev, onMount } from 'svelte/internal';
       <p>You have not joined any private rooms yet.</p>
     {:else}
       {#each joinedPrivateRooms as room}
-        <div class="room">
+        <div class="room" on:click={() => chatClicked(parseInt(room.id))}>
           <div class="left chat-color" style="background-color: {room.color};">
           </div>
           <h3 class="right chat-description">{room.name}</h3>
@@ -167,6 +180,7 @@ import { dataset_dev, onMount } from 'svelte/internal';
   }
   .room:hover {
     transform: scale(1.01);
+    cursor: pointer;
   }
   .all-rooms {
     width: 95%;
@@ -185,13 +199,6 @@ import { dataset_dev, onMount } from 'svelte/internal';
   }
   .participated-rooms {
     margin-top: 20px;
-  }
-  .room .chat-color {
-    display: block;
-    background-color: lightcoral;
-    width: 20px;
-    height: 20px;
-    border-radius: 5px;
   }
   .other-rooms {
     margin-top: 20px;

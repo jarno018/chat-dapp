@@ -13,15 +13,23 @@
   import { gun } from './user';
   import { SEA } from 'gun';
 
-  
+  //Structure of a message
+  interface IMessage {
+    createdBy: string,
+    createdAt: EpochTimeStamp,
+    message: string
+  }
+
+
   //Structure of a room object
   interface IRoom {
     name: string,
-    id: number,
+    id: string,
     color: string,
     isPrivate: boolean,
     salt: EpochTimeStamp,
-    hash: string
+    hash: string,
+    message: IMessage[]
   }
 
   let chatId: string;

@@ -9,21 +9,35 @@
   import { gun, user } from './user';
   import Editor from './Editor.svelte';
   import ChatRooms from './ChatRooms.svelte';
+  import Chat from './Chat.svelte';
 
   let editorActive: boolean = false;
 
+  let selectedChat: number = undefined;
+  let key: string = undefined;
+
   //Toggle add-chat window
-  const addChat = () => {
+  const toggleEditor = () => {
     editorActive = !editorActive;
+  }
+
+  //When the user selects a chat, we get the id and a key if the chat is private
+  const showChat = (event: any) => {
+    selectedChat = event.detail.id;
   }
 
 </script>
 
-<button class="add-button" on:click={addChat}>+</button>
+{#if !selectedChat}
+<button class="add-button" on:click={toggleEditor}>+</button>
+{/if}
+
 {#if editorActive}
   <Editor />
+{:else if selectedChat}
+  <Chat chatId={selectedChat} />
 {:else}
-  <ChatRooms />
+  <ChatRooms on:chatClicked={showChat} />  
 {/if}
 
 
@@ -31,7 +45,7 @@
   :global(body) {
     margin: 0;
     padding: 0;
-  }
+  } 
 
   .add-button {
     position: absolute;
