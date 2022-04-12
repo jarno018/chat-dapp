@@ -27,6 +27,8 @@
   },
   "type": "module",
   "dependencies": {
-    "gun": "^0.2020.1235"
+    "@fortawesome/free-solid-svg-icons": "^6.1.1",
+    "gun": "^0.2020.1235",
+    "svelte-fa": "^2.4.0"
   }
 }
