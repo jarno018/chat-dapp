@@ -1,5 +1,6 @@
 <script lang="ts">
   import { gun, user } from "./user";
+  import dab from '../includes/img/dab.png';
 
   // Username: Mathis
   // Password: delbeke123
@@ -80,7 +81,7 @@
 <div class="login">
   <h2>Welcome to the future</h2>
   <div class="icon">
-    <img src="/static/img/dab.png" alt="dab icon">
+    <img src={dab} alt="dab icon">
   </div>
   <form id="form" on:submit|preventDefault={handler}>
     <input type="text" id="username" placeholder="Username" bind:value={username} />
