@@ -11,6 +11,7 @@
   import { faClose, faInfo } from '@fortawesome/free-solid-svg-icons'
   import { createEventDispatcher } from 'svelte';
 import { SEA } from 'gun';
+import { afterUpdate, compute_slots, onMount } from 'svelte/internal';
 
   //Structure of a room object
   interface IRoom {
@@ -90,21 +91,22 @@ import { SEA } from 'gun';
     //Make sure we have a chat active
     if(!currentChat) return;
 
-    //Createding the message
-    let theMessage: IMessage = {
+    //Creating the message
+    let theMessage: IMessage|string = {
       message: enteredMessage, 
       createdBy: $username, 
       createdAt: Date.now()
     }
 
-    //Adding the message
     //If the chat is private, make sure we encrypt before adding
     if(currentChat.isPrivate) {
-      gun.get('rooms').get(chatId).get('messages').set(SEA.encrypt(theMessage, key));
+      for(let [key, value] of Object.entries(theMessage)) {
+        theMessage[key] = await SEA.encrypt(value, key);
+      }
     }
-    else {
-      gun.get('rooms').get(chatId).get('messages').set(theMessage);
-    }
+
+    //Adding the message, must be in object format
+    gun.get('rooms').get(chatId).get('messages').set(theMessage);
     
 
     //Resetting the field
@@ -114,8 +116,21 @@ import { SEA } from 'gun';
   const getMessages = async () => {
 
     //Iterate over all the messages and subscribe to changes
-    gun.get('rooms').get(chatId).get('messages').map((data: IMessage) => {
-      messages.push(data);
+    gun.get('rooms').get(chatId).get('messages').map(async (data: IMessage) => {
+
+      //If the current room is private, decryption is needed
+      if(currentChat.isPrivate) {
+        let t: IMessage = {} as IMessage;
+
+        for(let [key, value] of Object.entries(data)) {
+          t[key] = await SEA.decrypt(value, key);
+        }
+
+        messages.push(t);
+      }
+      else {
+        messages.push(data);
+      }      
 
       //Make sure the UI reacts by assignment
       messages = messages;
@@ -132,15 +147,27 @@ import { SEA } from 'gun';
   }
 
 
-  (async () => {
+  //Run when DOM is loaded
+  onMount(() => {
+    (async () => {
 
-    //Get the current room
-    currentChat = await getRoom().catch((err) => errMsg = err);
+      //Get the current room
+      currentChat = await getRoom().catch((err) => errMsg = err);
 
-    //Get all the messages (if any)
-    if(currentChat) await getMessages().catch((err) => errMsg = err);
+      //Get all the messages (if any)
+      if(currentChat) await getMessages().catch((err) => errMsg = err);
 
-  })();
+    })();
+  })
+
+  afterUpdate(() => {
+
+    //Grab the last message and scroll down to it after every update
+    let target = document.querySelector('.message-container:last-child');
+
+    if(target) target.scrollIntoView({behavior: 'smooth'});
+  })
+
 
 
 </script>
@@ -171,8 +198,8 @@ import { SEA } from 'gun';
     </div>
   {:else}
     <div class="chat-messages">
-      {#each messages as message}
-        <div class="message-container">
+      {#each messages as message, i}
+        <div class="message-container" style="align-self: {message.createdBy === $username ? 'end' : 'start'};">
           <p class="before">{message.createdBy}</p>
           <div class="message">
             <p>{message.message}</p>
@@ -231,11 +258,13 @@ import { SEA } from 'gun';
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+    overflow-y: auto;
   }
 
   
   .chat .chat-messages .message-container {
     margin-bottom: 20px;
+    padding-right: 5px;
   }
 
   .chat .chat-messages .message-container p.before {
@@ -278,6 +307,28 @@ import { SEA } from 'gun';
     background-color: rgb(230, 152, 28);;
     border: 1px solid black;
     
+  }
+
+  /**
+    Scrollbar styling
+    From https://www.w3schools.com/howto/howto_css_custom_scrollbar.asp
+  */
+  ::-webkit-scrollbar {
+    width: 5px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #7e1bda;
+    border-radius: 2px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #7208d4;
+    border-radius: 2px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #6c00d1;
   }
 
 
