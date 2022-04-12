@@ -6,18 +6,20 @@ import { writable } from 'svelte/store';
 export const gun = GUN({peers: ['http://10.129.36.97:8765/gun']});
 
 // Make the user
-export const user = gun.user().recall({sessionStorage: true});
+export let user = gun.user().recall({sessionStorage: true});
 
 // Export writable we can listen to
 export const username = writable('');
 
-// If the username changes, set it for the listeners
-gun.get('alias').on((name) => username.set(name));
+//If auth state changes
+gun.on('auth', async () => {
 
-// If data changes
-gun.on(async (event) => {
-  const username = await user.get('alias');
-  username.set(username);
+  //User is logged in
+  if(user.is) {
+    username.set(await user.get('alias'));
+  }
+  else {
+    username.set('');
+  }
 
-  console.log(`signed in as ${username}`);
 });
