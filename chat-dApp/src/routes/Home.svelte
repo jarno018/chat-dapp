@@ -13,8 +13,7 @@
 
   let editorActive: boolean = false;
 
-  let selectedChat: number = undefined;
-  let key: string = undefined;
+  let selectedChat: string = undefined;
 
   //Toggle add-chat window
   const toggleEditor = () => {
@@ -26,6 +25,11 @@
     selectedChat = event.detail.id;
   }
 
+  //Close the chat on user request
+  const closeChat = () => {
+    selectedChat = undefined;
+  }
+
 </script>
 
 {#if !selectedChat}
@@ -35,7 +39,7 @@
 {#if editorActive}
   <Editor />
 {:else if selectedChat}
-  <Chat chatId={selectedChat} />
+  <Chat chatId={selectedChat} on:closeChat={closeChat} />
 {:else}
   <ChatRooms on:chatClicked={showChat} />  
 {/if}
