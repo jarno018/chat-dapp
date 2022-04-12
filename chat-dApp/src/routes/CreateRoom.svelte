@@ -68,7 +68,7 @@
 
   const validateInput = (e:any) => {
     if(!e.target.value) {
-      errMsg = 'All field must be filled';
+      errMsg = 'All fields must be filled';
       return;
     }
     disabled = false;
