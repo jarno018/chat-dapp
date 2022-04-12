@@ -4,7 +4,8 @@
   import Home from './Home.svelte'
   import Rooms from './ChatRooms.svelte';
 
-  import { gun, user } from './user';
+  import { gun, user, username } from './user';
+
 
 </script>
 
@@ -12,7 +13,7 @@
   <title>Chat dApp</title>
 </svelte:head>
 <div class="app-window">
-  {#if user.is}
+  {#if $username}
     <Home />
   {:else}
     <Login />
