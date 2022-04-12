@@ -1,6 +1,6 @@
 <script lang="ts">
 
-  import AddRoom from './AddRoom.svelte';
+  import AddRoom from './JoinRoom.svelte';
   import CreateRoom from './CreateRoom.svelte'
 
   let action: string = 'add';
