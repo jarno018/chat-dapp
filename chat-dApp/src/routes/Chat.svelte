@@ -10,6 +10,7 @@
   import Fa from 'svelte-fa'
   import { faClose, faInfo } from '@fortawesome/free-solid-svg-icons'
   import { createEventDispatcher } from 'svelte';
+import { SEA } from 'gun';
 
   //Structure of a room object
   interface IRoom {
@@ -38,7 +39,7 @@
   export let chatId: string;
 
   //The current room
-  let chatRoom: IRoom;
+  let currentChat: IRoom;
 
   //All the messages
   let messages: IMessage[] = [];
@@ -86,6 +87,9 @@
 
   const sendMessage = async () => {
 
+    //Make sure we have a chat active
+    if(!currentChat) return;
+
     //Createding the message
     let theMessage: IMessage = {
       message: enteredMessage, 
@@ -94,7 +98,14 @@
     }
 
     //Adding the message
-    gun.get('rooms').get(chatId).get('messages').set(theMessage);
+    //If the chat is private, make sure we encrypt before adding
+    if(currentChat.isPrivate) {
+      gun.get('rooms').get(chatId).get('messages').set(SEA.encrypt(theMessage, key));
+    }
+    else {
+      gun.get('rooms').get(chatId).get('messages').set(theMessage);
+    }
+    
 
     //Resetting the field
     enteredMessage = "";
@@ -124,10 +135,10 @@
   (async () => {
 
     //Get the current room
-    chatRoom = await getRoom().catch((err) => errMsg = err);
+    currentChat = await getRoom().catch((err) => errMsg = err);
 
     //Get all the messages (if any)
-    if(chatRoom) await getMessages().catch((err) => errMsg = err);
+    if(currentChat) await getMessages().catch((err) => errMsg = err);
 
   })();
 
@@ -137,18 +148,18 @@
 <div class="chat">
   <div class="header">
     <span class="close" on:click={closeChat}><Fa icon={faClose}/></span>
-    <h3 class="chat-name">{chatRoom ? chatRoom.name : errMsg ? errMsg : 'getting info...'}</h3>
+    <h3 class="chat-name">{currentChat ? currentChat.name : errMsg ? errMsg : 'getting info...'}</h3>
     <span class="info" on:click={toggleInfoWindow} style="color:{infoWindowActive ? 'lightblue' : 'black'}"><Fa icon={faInfo}/></span>
   </div>
   {#if infoWindowActive}
     <div class="info-window">
       <div>
         <b>name:</b>
-        <p>{chatRoom.name}</p>
+        <p>{currentChat.name}</p>
       </div>
       <div>
         <b>id:</b>
-        <p>{chatRoom.id}</p>
+        <p>{currentChat.id}</p>
       </div>
       {#if isPrivate}
         <div>
