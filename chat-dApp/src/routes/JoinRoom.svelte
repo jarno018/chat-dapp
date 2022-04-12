@@ -10,16 +10,8 @@
 
   import Chat from './Chat.svelte';
   import ColorPicker from './ColorPicker.svelte'
-  import { gun } from './user';
+  import { gun, user } from './user';
   import { SEA } from 'gun';
-
-  //Structure of a message
-  interface IMessage {
-    createdBy: string,
-    createdAt: EpochTimeStamp,
-    message: string
-  }
-
 
   //Structure of a room object
   interface IRoom {
@@ -29,7 +21,6 @@
     isPrivate: boolean,
     salt: EpochTimeStamp,
     hash: string,
-    message: IMessage[]
   }
 
   let chatId: string;
@@ -39,15 +30,27 @@
   let submitted: boolean = false;
 
   let findRoomWithId = () => {
+
+    //A valid id must be supplied
+    if(!chatId) {
+      submitted = true;
+      return;
+    }
+
     gun.get('rooms').get(chatId).once((data: IRoom) => {
-      //If the room is found
-      if(!data) return;
+
+      //If the room is not found
+      if(!data) {
+        resultingChat = {} as IRoom;
+        return;
+      }
+
+      //Room is found
       resultingChat = data;
 
-      //Make sure we can pass if a key is not needed
+      //Make sure we can join if a key is not needed
       if(!resultingChat.isPrivate) keyIsValid = true;
-    });
-    
+    });    
   }
 
   let validateKey = () => {
@@ -61,6 +64,16 @@
 
   let handleSubmit = (e) => {
 
+    //Check if we found a room and have a valid key
+    if(!resultingChat || !keyIsValid) return;
+
+    //Save the chat in the users graph
+    if(resultingChat.isPrivate) {
+      user.get('joinedPrivateRooms').set({id: resultingChat.id, key: suppliedKey});
+    }
+    else {
+      user.get('joinedPublicRooms').set({id: resultingChat.id});
+    }
   }
 
 </script>
@@ -69,7 +82,7 @@
   <form action="#" on:submit|preventDefault={handleSubmit}>
     <div class="credentials">
       <input type="text" placeholder="ID" bind:value={chatId} on:blur={findRoomWithId}>
-      {#if !resultingChat}
+      {#if submitted && !resultingChat}
         <span class="error">No chat found, please check the ID</span>
       {/if}
       {#if resultingChat && resultingChat.isPrivate}
