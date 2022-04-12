@@ -15,7 +15,7 @@
 
   //Structure of a joined room
   interface IJoinedRoom {
-    id: number
+    id: string
     key?: string
   }
 
@@ -36,7 +36,7 @@
   }
 
   //Get the chatroom based on supplied id
-  const getRoomFromId = async (id:  number): Promise<IRoom> => {
+  const getRoomFromId = async (id:  string): Promise<IRoom> => {
     return new Promise((resolve, reject) => {
       gun.get('rooms').get(id).once((targetRoom: IRoom) => {
         resolve(targetRoom);
@@ -64,17 +64,6 @@
     });
   }
 
-
-  // (async() => {
-  //   user.get('joinedPublicRooms').map((result) => {
-  //     console.log(result);
-  //     // gun.get(data).once((result) => {
-  //     //   console.log(result);
-  //     // })
-  //   });
-
-  // })();
-
   //Get the private chatrooms a user has joined
   //Searching the user -> joinedPrivateRooms graph
   //Return array of objects containing all ids of private joined rooms
@@ -84,8 +73,6 @@
         //After getting the ID, retreive the chat itself
         let room = await getRoomFromId(data.id);
 
-        console.log(data);
-
         if(!data) return;
 
         //Only add if the chat is not already present
@@ -94,7 +81,6 @@
         //To trigger UI update, we need assignment istead of mutation
         joinedPrivateRooms = joinedPrivateRooms;
       });
-      console.log(joinedPrivateRooms);
       resolve();
     });
   }
