@@ -6,7 +6,7 @@
   */
 
   import 'gun/lib/then'
-  import { gun, user } from './user';
+  import { gun, user, username } from './user';
   import Editor from './Editor.svelte';
   import ChatRooms from './ChatRooms.svelte';
   import Chat from './Chat.svelte';
@@ -30,6 +30,14 @@
     selectedChat = undefined;
   }
 
+  //Log the user out
+  const logOut = async () => {
+    user.leave();
+
+    //Reset the username so the UI reacts
+    username.set('');
+  }
+
 </script>
 
 {#if !selectedChat}
@@ -41,6 +49,10 @@
 {:else if selectedChat}
   <Chat chatId={selectedChat} on:closeChat={closeChat} />
 {:else}
+  <div class="profile">
+    <span>Logged in as {$username}</span>
+    <span on:click={logOut} class="logout">Log out</span>
+  </div>
   <ChatRooms on:chatClicked={showChat} />  
 {/if}
 
@@ -66,6 +78,18 @@
 
   .add-button:hover {
     background-color: rgb(185, 134, 52);
+  }
+
+  .profile {
+    width: 95%;
+    margin: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .profile .logout {
+    cursor: pointer;
   }
 
 </style>
