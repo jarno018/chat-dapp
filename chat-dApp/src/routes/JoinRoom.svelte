@@ -33,7 +33,6 @@
 
     //A valid id must be supplied
     if(!chatId) {
-      submitted = true;
       return;
     }
 
@@ -53,13 +52,12 @@
     });    
   }
 
-  let validateKey = () => {
+  let validateKey = async() => {
     //Check if the chat exists
     if(!resultingChat) return;
 
     //Checking if the supplied key is correct
-    if(SEA.decrypt(resultingChat.hash, suppliedKey)) keyIsValid = true;
-
+    keyIsValid = await SEA.decrypt(resultingChat.hash, suppliedKey);
   }
 
   let handleSubmit = (e) => {
@@ -87,9 +85,11 @@
       {/if}
       {#if resultingChat && resultingChat.isPrivate}
         <span class="error">This chat is private, a key is needed</span>
-        <input type="text" placeholder="sleutel" bind:value={suppliedKey} on:blur={validateKey}>
-        {#if keyIsValid}
+        <input type="text" placeholder="key" bind:value={suppliedKey} on:blur={validateKey}>
+        {#if !keyIsValid}
           <span class="error">Wrong key</span>
+        {:else}
+          <span class="success">Key correct</span>
         {/if}
       {/if}
     </div>
