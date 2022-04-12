@@ -8,13 +8,6 @@
   import { gun, user, username } from './user';
   import { generateRandomString, generateRandomNumber } from '../util/random';
 
-  //Structure of a message
-  interface IMessage {
-    createdBy: string,
-    createdAt: EpochTimeStamp,
-    message: string
-  }
-
   //Structure of a room object
   interface IRoom {
     name: string,
