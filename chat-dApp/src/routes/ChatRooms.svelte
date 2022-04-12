@@ -1,6 +1,6 @@
 <script lang="ts">
 
-  import { gun, user } from './user';
+  import { gun, user } from './gun';
   import { createEventDispatcher, onMount } from 'svelte/internal';
 
   //Structure of a room object

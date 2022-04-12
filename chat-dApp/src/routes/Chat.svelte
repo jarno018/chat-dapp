@@ -6,12 +6,12 @@
    * Messages sent from other users are on the left, own messages are on the right
   */
 
-  import { gun, user, username } from './user';
+  import { gun, user, username } from './gun';
   import Fa from 'svelte-fa'
   import { faClose, faInfo } from '@fortawesome/free-solid-svg-icons'
   import { createEventDispatcher } from 'svelte';
-import { SEA } from 'gun';
-import { afterUpdate, compute_slots, onMount } from 'svelte/internal';
+  import { SEA } from 'gun';
+  import { afterUpdate, onMount } from 'svelte/internal';
 
   //Structure of a room object
   interface IRoom {

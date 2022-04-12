@@ -10,7 +10,7 @@
 
   import Chat from './Chat.svelte';
   import ColorPicker from './ColorPicker.svelte'
-  import { gun, user } from './user';
+  import { gun, user } from './gun';
   import { SEA } from 'gun';
 
   //Structure of a room object

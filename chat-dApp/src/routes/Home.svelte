@@ -6,7 +6,7 @@
   */
 
   import 'gun/lib/then'
-  import { gun, user, username } from './user';
+  import { gun, user, username } from './gun';
   import Editor from './Editor.svelte';
   import ChatRooms from './ChatRooms.svelte';
   import Chat from './Chat.svelte';

@@ -3,9 +3,7 @@
   import Login from './Login.svelte';
   import Home from './Home.svelte'
   import Rooms from './ChatRooms.svelte';
-
-  import { gun, user, username } from './user';
-
+  import { username } from './gun'
 
 </script>
 

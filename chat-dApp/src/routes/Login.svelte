@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { gun, user } from "./user";
+  import { gun, user } from "./gun";
   import dab from '../includes/img/dab.png';
 
   // Username: Mathis
@@ -126,6 +126,7 @@
   .icon img{
     width: 75%;
     height: 75%;
+    max-width: 280px;
   }
   form {
     margin: auto;

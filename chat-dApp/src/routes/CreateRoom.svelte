@@ -5,7 +5,7 @@
 
   import ColorPicker from './ColorPicker.svelte';
   import { SEA } from "gun";
-  import { gun, user, username } from './user';
+  import { gun, user, username } from './gun';
   import { generateRandomString, generateRandomNumber } from '../util/random';
 
   //Structure of a room object
