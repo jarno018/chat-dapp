@@ -96,6 +96,8 @@
     <button type="submit" disabled={disabled}>Create!</button>
     {#if creationSuccessFull}
       <span class="success">Creation successfull</span>
+    {:else if errMsg}
+    <span class="error">{errMsg}</span>
     {/if}
   </form>
   
