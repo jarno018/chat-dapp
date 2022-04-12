@@ -54,11 +54,16 @@
 
   const retrieveKey = async (id: string): Promise<string> => {
     return new Promise((resolve, reject) => {
-      user.get('joinedPrivateRooms').get(id).once((data: IJoinedRoom) => {
-          console.log(data);
-          if(!data) reject('You don\'t have the key for this chat');
-          resolve(data.key);
+      user.get('joinedPrivateRooms').map((data: IJoinedRoom) => {
+
+        //Found the chat we were looking for
+        if(data.id == chatId) {
+          
+          return resolve(data.key);
+        }
+
       })
+      return reject('You don\'t have the key for this chat');
     })
   }
 
@@ -101,7 +106,7 @@
     gun.get('rooms').get(chatId).get('messages').map((data: IMessage) => {
       messages.push(data);
 
-      //Make sure the UI react by assignment
+      //Make sure the UI reacts by assignment
       messages = messages;
     })
   }
@@ -117,19 +122,13 @@
 
 
   (async () => {
-    try {
 
-      //Get the current room
-      chatRoom = await getRoom();
+    //Get the current room
+    chatRoom = await getRoom().catch((err) => errMsg = err);
 
-      console.log(chatRoom);
+    //Get all the messages (if any)
+    if(chatRoom) await getMessages().catch((err) => errMsg = err);
 
-      //Get all the messages (if any)
-      if(chatRoom) await getMessages();
-
-    } catch(e: any) {
-      errMsg = e;
-    }
   })();
 
 
