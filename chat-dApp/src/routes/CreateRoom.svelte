@@ -41,7 +41,7 @@
     if(newChat.isPrivate) {
       let salt = Date.now();
       let preHash = parseInt(newChat.id) ^ salt;
-      let createdKey = generateRandomNumber().toString();
+      createdKey = generateRandomNumber().toString();
       newChat.hash = await SEA.encrypt(preHash, createdKey);
       newChat.salt = salt;
     }
