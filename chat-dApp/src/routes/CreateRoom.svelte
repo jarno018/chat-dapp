@@ -31,6 +31,7 @@
   let errMsg: string;
   let disabled: boolean = true;
   let creationSuccessFull = false;
+  let createdKey: string;
 
   const handleSubmit = async () => {
     //Check if submitting is possible
@@ -40,8 +41,8 @@
     if(newChat.isPrivate) {
       let salt = Date.now();
       let preHash = parseInt(newChat.id) ^ salt;
-      let key = generateRandomNumber().toString();
-      newChat.hash = await SEA.encrypt(preHash, key);
+      let createdKey = generateRandomNumber().toString();
+      newChat.hash = await SEA.encrypt(preHash, createdKey);
       newChat.salt = salt;
     }
 
@@ -51,7 +52,7 @@
 
     //Add the room to the users joinedRooms
     if(newChat.isPrivate) {
-      user.get('joinedPrivateRooms').set({id: newChat.id});
+      user.get('joinedPrivateRooms').set({id: newChat.id, key: createdKey});
 
     }
     else {
