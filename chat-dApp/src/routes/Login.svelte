@@ -25,11 +25,11 @@
   const login = async () => {
     return new Promise<void>((resolve, reject) => {
       //Check if the user exists
-      if(!userExists()) reject('User not found. Register instead ?');
+      if(!userExists()) return reject('User not found. Register instead ?');
 
       //If the user exists, authenticate
       user.auth(username, password, (ack: any) => {
-        if(ack.err) reject(ack.err);
+        if(ack.err) return reject(ack.err);
         else resolve();
       })
     })
@@ -38,13 +38,15 @@
   }
 
   const register = async () => {
-    return new Promise<void>((resolve, reject) => {
+    return new Promise<void>(async (resolve, reject) => {
       //Check if username is not taken
-      if(userExists()) reject('Username is already taken');
+      if(await userExists()) return reject('Username is already taken');
 
       //Create the user
       user.create(username, password, (ack: any) => {
-        if(ack.err) reject(ack.err);
+        if(ack.err) {
+          return reject(ack.err);
+        }
         else resolve();
       });
     })
