@@ -4,9 +4,10 @@
   /**
    * Here a user can join a room based on a supplied ID
    * If the rooms where to be private, a key is needed to join, otherwise messages cant be decoded
-   * TODO: add timeout for the ID inputfield so errormessage is not displayed directly
-   * TODO: colors for the key ?
   */
+
+  //TODO colors for the key
+  //TODO add timeout for the ID inputfield so errormessage is not displayed directly
 
   import Chat from './Chat.svelte';
   import ColorPicker from './ColorPicker.svelte'

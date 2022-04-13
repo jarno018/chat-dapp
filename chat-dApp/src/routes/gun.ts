@@ -3,7 +3,7 @@ import 'gun/sea';
 import { writable } from 'svelte/store';
 
 // Init the DB with relay/signaling server
-export const gun = GUN({peers: ['http://10.129.36.97:8765/gun']});
+export const gun = GUN({peers: ['http://10.129.36.97:8765/gun']}); //TODO fix the server
 
 // Make the user
 export let user = gun.user().recall({sessionStorage: true});
