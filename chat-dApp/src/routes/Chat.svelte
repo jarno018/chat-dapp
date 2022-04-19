@@ -126,10 +126,12 @@
           t[key] = await SEA.decrypt(value, key);
         }
 
-        messages.push(t);
+        //Determine wether a message has already been added (fixes bug in GUN-map function)
+        if(messages.indexOf(t) == -1) messages.push(t);
       }
       else {
-        messages.push(data);
+        //Determine wether a message has already been added (fixes bug in GUN-map function)
+        if(messages.indexOf(data) == -1) messages.push(data);
       }      
 
       //Make sure the UI reacts by assignment
