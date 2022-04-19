@@ -1,6 +1,7 @@
 <script lang="ts">
   import { gun, user } from "./gun";
   import dab from '../includes/img/dab.png';
+  import { username as usrname } from './gun';
 
   // Username1: Mathis
   // Password1: delbeke123
@@ -50,7 +51,11 @@
         if(ack.err) {
           return reject(ack.err);
         }
-        else resolve();
+        else {
+          //Trigger UI update
+          usrname.set(username);
+          resolve();
+        }
       });
     })
 
