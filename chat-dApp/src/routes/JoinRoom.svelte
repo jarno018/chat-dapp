@@ -6,9 +6,6 @@
    * If the rooms where to be private, a key is needed to join, otherwise messages cant be decoded
   */
 
-  //TODO colors for the key
-  //TODO add timeout for the ID inputfield so errormessage is not displayed directly
-
   import Chat from './Chat.svelte';
   import ColorPicker from './ColorPicker.svelte'
   import { gun, user } from './gun';
@@ -29,6 +26,7 @@
   let suppliedKey: string;
   let keyIsValid: boolean = false;
   let submitted: boolean = false;
+  let idEntered: boolean = false;
 
   let findRoomWithId = () => {
 
@@ -36,6 +34,8 @@
     if(!chatId) {
       return;
     }
+
+    idEntered = true;
 
     gun.get('rooms').get(chatId).once((data: IRoom) => {
 
@@ -80,13 +80,15 @@
 <div class="editor-window">
   <form action="#" on:submit|preventDefault={handleSubmit}>
     <div class="credentials">
-      <input type="text" placeholder="ID" bind:value={chatId} on:blur={findRoomWithId}>
-      {#if submitted && !resultingChat}
+      <input type="text" placeholder="ID" bind:value={chatId} on:keyup={findRoomWithId}>
+      {#if idEntered && resultingChat && !Object.keys(resultingChat).length}
         <span class="error">No chat found, please check the ID</span>
+      {:else if resultingChat && Object.keys(resultingChat)}
+        <span class="success">Chat found!</span>
       {/if}
       {#if resultingChat && resultingChat.isPrivate}
-        <span class="error">This chat is private, a key is needed</span>
-        <input type="text" placeholder="key" bind:value={suppliedKey} on:blur={validateKey}>
+        <span class="success">This chat is private, a key is needed</span>
+        <input type="text" placeholder="key" bind:value={suppliedKey} on:keyup={validateKey}>
         {#if !keyIsValid}
           <span class="error">Wrong key</span>
         {:else}
