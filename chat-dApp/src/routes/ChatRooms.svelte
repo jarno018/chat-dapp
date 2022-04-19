@@ -2,6 +2,8 @@
 
   import { gun, user } from './gun';
   import { createEventDispatcher, onMount } from 'svelte/internal';
+  import Search from './Search.svelte';
+import Chat from './Chat.svelte';
 
   //Structure of a room object
   interface IRoom {
@@ -84,6 +86,14 @@
       resolve();
     });
   }
+
+  //When a user enters a query, we display the found chats
+  //When a user then clicks on a room, we display this chat
+  const chainClick = (event: any) => {
+
+    //Pass the clicked id to the parent
+    chatClicked(event.detail.id);
+  }
   
 
   //Run when UI is loaded
@@ -102,6 +112,10 @@
   <input class="top-content searchbar" type="text" bind:value={searchTerm} placeholder="Search for chats">
 </div>
 <div class="all-rooms">
+  {#if searchTerm}
+    <h2 class="search-results">Search results</h2>
+    <Search bind:query={searchTerm} on:clickChain={chainClick}/>
+  {:else}
   <div class="participated-rooms">
     <h2 class="font-semibold text-black text-lg">Public rooms</h2>
     {#if !joinedPublicRooms.length}
@@ -130,6 +144,7 @@
       {/each}
     {/if}
   </div>
+  {/if}
 </div>
 
 
@@ -152,6 +167,10 @@
     width: 95%;
     font-size: large;
     padding: 5px 5px 5px 5px;
+  }
+  .all-rooms .search-results {
+    margin-top: 20px;
+    font-weight: 500;;
   }
   .room {
     width: 100%;
