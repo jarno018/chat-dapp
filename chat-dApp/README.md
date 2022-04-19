@@ -17,5 +17,5 @@ npm run dev
 
 To log in, fill in a username and a password. If you don't already have an account, you can choose to create one. After registering, you are logged in automatically.
 
-
+# Joining public chats
 
