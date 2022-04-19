@@ -1,7 +1,7 @@
 # Chat-dApp
 # Running this project
 
--To run this project, follow these steps
+To run this project, follow these steps
 
 ```bash
 # cd into the project directory
@@ -15,7 +15,7 @@ npm run dev
 
 # Logging in
 
--To log in, fill in a username and a password. If you don't already have an account, you can choose to create one. If you are e new user who just clicked 'register', a pageload is required. You should be logged in automatically when the page reloads.
+To log in, fill in a username and a password. If you don't already have an account, you can choose to create one. If you are e new user who just clicked 'register', a pageload is required. You should be logged in automatically when the page reloads.
 
 
 
