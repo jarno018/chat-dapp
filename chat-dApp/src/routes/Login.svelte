@@ -2,8 +2,11 @@
   import { gun, user } from "./gun";
   import dab from '../includes/img/dab.png';
 
-  // Username: Mathis
-  // Password: delbeke123
+  // Username1: Mathis
+  // Password1: delbeke123
+
+  //Username2: Lukas
+  //Password2: delbeke123
 
   // Keep track if the user tried to login
   let attemptedLogin: boolean = false;
