@@ -35,7 +35,7 @@
   .app-window {
     width: 45%;
     height: 65%;
-    background-color: blueviolet;
+    background-color: rgb(245, 240, 250);
     border: 1px solid black;
     position: relative;
   }
